@@ -1,0 +1,18 @@
+greetings
+how are you
+what do you do
+what you doin
+hello
+hi
+hai
+good morning
+good evening
+good afternoon
+good night#
+
+ask_for_definition
+what do you know about
+what is the definition about
+what is
+do you know about
+what do you think about#
