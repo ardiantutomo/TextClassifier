@@ -23,7 +23,10 @@ It will make a dictionary that consist of class name with their sentences.
 every word will have their own value. That value will be used for counting score for classifying text.
 
 
-refences:
 
-https://towardsdatascience.com/multinomial-naive-bayes-classifier-for-text-analysis-python-8dd6825ece67
-https://gist.github.com/ugik
+
+*References:*
+
+*https://towardsdatascience.com/multinomial-naive-bayes-classifier-for-text-analysis-python-8dd6825ece67*
+
+*https://gist.github.com/ugik*
