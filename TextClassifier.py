@@ -7,51 +7,41 @@ class TextClassifier:
     stemmer = WordNetLemmatizer()
     training_data,classes,corpus_words,class_words = [],[],{},{}     
 
-    def check_training_data(self): 
+    def check_training_data(self,path): 
         #default training data
-        if os.path.exists('trained.trn') == False:
+        if os.path.exists(path) == False:
             return False
         else:
             return True
 
-    def training(self):
-        if self.check_training_data():
-            with open(r"trained.trn","rb") as file:
-                self.training_data = pickle.load(file)
-        else:                
-            classes = ""
-            with open("data.txt", encoding='utf-8-sig') as file: # text file
-                for line in file:
-                    file_data = line.rstrip()
-                    if classes == "":
-                        classes = file_data
-                    else:
-                        if file_data[len(file_data)-1] == "#":
-                            file_data = file_data[:-1]
-                            self.training_data.append({"class":classes, "sentence":file_data})
-                            classes = ""
-                        else:
-                            self.training_data.append({"class":classes, "sentence":file_data})
-            with open("trained.trn","wb") as output_file:
-                pickle.dump(self.training_data, output_file)
+
+    def load_training_data(self, path):
+        with open(r"trained.trn","rb") as file:
+            self.training_data = pickle.load(file)
+
 
     def __init__(self):
-        self.training()
-        self.classes = list(set([a['class'] for a in self.training_data])) # get name of class        
+        path = "trained.trn"
+        if self.check_training_data(path):
+            self.load_training_data(path)
+            self.classes = list(set([a['class'] for a in self.training_data])) # get name of class        
+            print(self.classes)
+            print()
+            for c in self.classes:
+                self.class_words[c] = [] # make list for each class
 
-        for c in self.classes:
-            self.class_words[c] = [] # make list for each class
-
-        for data in self.training_data:
-            for word in nltk.word_tokenize(data['sentence']):
-                if word not in ["?", "'s"]:
-                    stemmed_word = self.stemmer.lemmatize(word.lower())
-                    if stemmed_word not in self.corpus_words:
-                        self.corpus_words[stemmed_word] = 1
-                    else:
-                        self.corpus_words[stemmed_word] += 1
-                    self.class_words[data['class']].extend([stemmed_word])
-
+            for data in self.training_data:
+                for word in nltk.word_tokenize(data['sentence']):
+                    if word not in ["?", "'s"]:
+                        stemmed_word = self.stemmer.lemmatize(word.lower())
+                        if stemmed_word not in self.corpus_words:
+                            self.corpus_words[stemmed_word] = 1
+                        else:
+                            self.corpus_words[stemmed_word] += 1
+                        self.class_words[data['class']].extend([stemmed_word])
+        else:
+            print ("Error trained data not found!")
+            return
 
     def get_score(self,sentence, class_name):
         score = 0
