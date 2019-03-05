@@ -23,6 +23,8 @@ It will make a dictionary that consist of class name with their sentences.
 every word will have their own value. That value will be used for counting score for classifying text.
 
 
+You can also input training data with trainer module
+
 
 
 *References:*
