@@ -1,4 +1,5 @@
 import os,pickle
+import sys
 
 
 class Trainer:
@@ -21,6 +22,16 @@ class Trainer:
         with open(outpath,"wb") as output_file:
             pickle.dump(self.training_data, output_file)
 
+    def check_data(self,path): 
+        if os.path.exists(path) == False:
+            return False
+        else:
+            return True
+
+    def load_trained_data(self, inpath):
+        with open(inpath,"rb") as file:
+            self.training_data = pickle.load(file)
+
 
     def training(self, classes, sentence,path):
         self.training_data.append({"class":classes, "sentence":sentence})
@@ -32,18 +43,47 @@ class Trainer:
         classes = list(set([a['class'] for a in self.training_data])) # get name of class   
         for c in classes:
             result[c] = [] # make list for each class
-
+        
         for data in self.training_data:
             result[data['class']].extend([data['sentence']])
-        print (result)
 
+        key = ""
+        for k,v in result.items():
+            if key != k: 
+                print(k)  
+                key = k
+            for z in v:
+                print("- " + z) 
+        
 if __name__ == '__main__':
-    while True:
-        z = Trainer()
-        classes = input("Class: ")
-        sentence = input("Sentence: ")
-        path = "trained.trn"
-        path2 = "data.txt"
-        z.load_default_data(path2,path)
-        z.training(classes,sentence,path)
-        z.print_training_data()
+    arguments = sys.argv[1:]
+    z = Trainer()
+    path = "trained.trn"
+    path2 = "data.txt"
+
+    if "-load-default" in arguments:
+        #-load-default inFilePath outFilePath
+        id = arguments.index("-load-default")
+        if not z.check_data(arguments[id+1]) or not z.check_data(arguments[id+2]):
+            print("File not found")
+            exit
+        z.load_default_data(arguments[id+1] ,arguments[id+2])
+
+
+    if "-list" in arguments:
+        z.print_training_data() 
+
+    if "-train" in arguments:
+        #-train inFilePath outFilePath
+        if "-load" in arguments:
+            id = arguments.index("-load")
+            z.load_trained_data(arguments[id+1]) if z.check_data(arguments[id+1]) else print("File not found")
+        else:
+            id = arguments.index("-train")
+            z.load_default_data(arguments[id+1] ,arguments[id+2])
+            z.load_default_data(arguments[id+1] ,arguments[id+2])
+        while True:
+            z.print_training_data()
+            classes = input("Class: ")
+            sentence = input("Sentence: ")
+            z.training(classes,sentence,path)
