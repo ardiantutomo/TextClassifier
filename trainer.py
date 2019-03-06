@@ -13,9 +13,7 @@ class Trainer:
                 if classes == "":
                     classes = file_data
                 else:
-                    if file_data[len(file_data)-1] == "#":
-                        file_data = file_data[:-1]
-                        self.training_data.append({"class":classes, "sentence":file_data})
+                    if file_data== "#":
                         classes = ""
                     else:
                         self.training_data.append({"class":classes, "sentence":file_data})
@@ -54,7 +52,29 @@ class Trainer:
                 key = k
             for z in v:
                 print("- " + z) 
+    
+    def  export_to_txt(self, outpath):
+        result = {}
+        classes = list(set([a['class'] for a in self.training_data])) # get name of class   
+        for c in classes:
+            result[c] = [] # make list for each class
         
+        for data in self.training_data:
+            result[data['class']].extend([data['sentence']])
+
+        key = ""
+        with open(outpath,"w+") as file:
+            for k,v in result.items():
+                if key != k: 
+                    file.write(k + "\n") 
+                    key = k
+                for z in v:
+                    file.write(z + "\n") 
+                file.write("#\n")
+        file.close
+        
+
+
 if __name__ == '__main__':
     arguments = sys.argv[1:]
     z = Trainer()
@@ -72,6 +92,10 @@ if __name__ == '__main__':
 
     if "-list" in arguments:
         z.print_training_data() 
+
+    if "-export" in arguments:
+        id = arguments.index("-export")
+        z.export_to_txt(arguments[id+1])
 
     if "-train" in arguments:
         #-train inFilePath outFilePath
